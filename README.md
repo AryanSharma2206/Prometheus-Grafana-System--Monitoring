@@ -1,31 +1,35 @@
-# 🔧 SysMon360 – Real-Time Linux System Monitoring with Prometheus & Grafana
+# 🖥️ SysMon360 – Real-Time Linux System Monitoring
 
-Monitor your system’s health in real time with **Prometheus**, **Node Exporter**, and **Grafana**. This project visualizes vital system metrics like CPU, memory, disk usage, uptime, and more — all from your local Linux environment.
-
----
-
-## 👨‍💻 Author
-
-**Aryan Sharma**  
-B.Tech CSE (AI & DS) | DevOps Enthusiast  
-📍 Jaipur, India  
-🔗 [LinkedIn Profile](https://www.linkedin.com/in/aryan-sharma-a2a240353/)
+**SysMon360** is a personal system monitoring dashboard using **Prometheus**, **Node Exporter**, and **Grafana**. It enables real-time visualization of vital Linux system metrics including CPU, memory, disk usage, uptime, and more — all hosted and running locally.
 
 ---
 
-## 📌 Features
+## 🛠️ Tech Stack
 
-- Collects system metrics via **Node Exporter**
-- Stores and queries metrics using **Prometheus**
-- Builds beautiful, customizable dashboards with **Grafana**
-- Real-time visualizations for:
-  - CPU, RAM, and disk usage
-  - Uptime and system load
-  - Network I/O and processes
+- **Prometheus** – Time-series database and scraper  
+- **Node Exporter** – Exposes system metrics  
+- **Grafana** – Dashboard & visualization tool  
+- **PromQL** – Query language for Prometheus  
+- **Linux Shell**, **YAML**
 
 ---
 
-## 🏗️ Architecture Diagram
+## 📁 Project Structure
+
+```
+sysmon360/
+│
+├── node_exporter/                  # Node Exporter binary & service
+├── prometheus/
+│   ├── prometheus.yml              # Configuration for scraping
+│   └── data/                       # TSDB data
+├── grafana/ (optional if needed)
+├── README.md
+```
+
+---
+
+## 🧱 Architecture Overview
 
 ```
                 ┌────────────────────────────┐
@@ -57,26 +61,17 @@ B.Tech CSE (AI & DS) | DevOps Enthusiast
 
 ---
 
-## ⚙️ Technologies Used
-
-- Prometheus
-- Node Exporter
-- Grafana
-- Linux Shell
-- YAML
-- PromQL (Prometheus Query Language)
-
----
-
 ## 🚀 Setup Instructions
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/AryanSharma2206/sysmon360
 cd sysmon360
 ```
 
-### 2. Extract Binaries
+### 2. Extract Prometheus & Node Exporter
+
 ```bash
 tar -xvf prometheus-*.tar.gz
 tar -xvf node_exporter-*.tar.gz
@@ -84,14 +79,17 @@ mv prometheus-* prometheus
 mv node_exporter-* node_exporter
 ```
 
-### 3. Run Node Exporter
+### 3. Start Node Exporter
+
 ```bash
 cd node_exporter
 ./node_exporter
 ```
 
-### 4. Run Prometheus
-Edit `prometheus/prometheus.yml` with your scrape configs:
+### 4. Configure and Start Prometheus
+
+Update `prometheus/prometheus.yml`:
+
 ```yaml
 scrape_configs:
   - job_name: 'prometheus'
@@ -103,36 +101,34 @@ scrape_configs:
       - targets: ['localhost:9100']
 ```
 
-Then start:
+Then run:
+
 ```bash
 cd prometheus
 ./prometheus --config.file=prometheus.yml
 ```
 
-### 5. Install & Start Grafana
+### 5. Install & Run Grafana
+
 ```bash
+sudo apt update
 sudo apt install -y grafana
 sudo systemctl start grafana-server
 sudo systemctl enable grafana-server
 ```
 
-### 6. Access Dashboards
+---
 
-- Prometheus UI → [http://localhost:9090](http://localhost:9090)  
-- Node Exporter → [http://localhost:9100](http://localhost:9100)  
-- Grafana → [http://localhost:3000](http://localhost:3000)  
+## 🌐 Access Interfaces
+
+- **Prometheus** → [http://localhost:9090](http://localhost:9090)  
+- **Node Exporter** → [http://localhost:9100](http://localhost:9100)  
+- **Grafana** → [http://localhost:3000](http://localhost:3000)  
   *(Default login: `admin` / `admin`)*
 
 ---
 
-## 📊 Sample Dashboard Screenshot
-
-> _Include screenshots of your Grafana dashboard here_  
-> *(You can paste here once uploaded to the repo or linked externally)*
-
----
-
-## 📈 Example Queries (PromQL)
+## 📈 Useful PromQL Queries
 
 ```promql
 node_cpu_seconds_total
@@ -144,14 +140,10 @@ rate(node_network_receive_bytes_total[1m])
 
 ---
 
-## 📢 Connect With Me
+## 👨‍💻 Author
 
-Feel free to connect with me for project insights, internships, or collaboration!
-
-🔗 [LinkedIn – Aryan Sharma](https://www.linkedin.com/in/aryan-sharma-a2a240353/)
-
----
-
-## 📄 License
-
-MIT License © Aryan Sharma
+**Aryan Sharma**  
+B.Tech CSE (AI & DS) | Poornima University  
+GitHub: [@AryanSharma2206](https://github.com/AryanSharma2206)  
+LinkedIn: [linkedin.com/in/aryan-sharma-a2a240353](https://www.linkedin.com/in/aryan-sharma-a2a240353)  
+Location: Jaipur, India
