@@ -1,0 +1,7 @@
+# Ignore Prometheus and Node Exporter binaries
+prometheus/
+node_exporter/
+*.tar.gz
+*.zip
+*.exe
+
