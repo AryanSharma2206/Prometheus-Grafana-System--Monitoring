@@ -1,149 +1,119 @@
-# 🖥️ SysMon360 – Real-Time Linux System Monitoring
+# 🖥️ Real-Time Linux System Monitoring with Prometheus & Grafana
 
-**SysMon360** is a personal system monitoring dashboard using **Prometheus**, **Node Exporter**, and **Grafana**. It enables real-time visualization of vital Linux system metrics including CPU, memory, disk usage, uptime, and more — all hosted and running locally.
+This project demonstrates a comprehensive, real-time system monitoring solution for a Linux machine using **Prometheus**, **Node Exporter**, and **Grafana**. It provides a detailed, visually appealing dashboard to track key performance indicators (KPIs) like CPU, memory, disk, and network usage.
 
 ---
-
 ## 🛠️ Tech Stack
 
-- **Prometheus** – Time-series database and scraper  
-- **Node Exporter** – Exposes system metrics  
-- **Grafana** – Dashboard & visualization tool  
-- **PromQL** – Query language for Prometheus  
-- **Linux Shell**, **YAML**
+-   **Monitoring & Alerting:** Prometheus
+-   **Metrics Exposition:** Node Exporter
+-   **Visualization & Dashboards:** Grafana
+-   **Query Language:** PromQL
+-   **Core Technologies:** Linux Shell, YAML
 
 ---
-
-## 📁 Project Structure
-
-```
-sysmon360/
-│
-├── node_exporter/                  # Node Exporter binary & service
-├── prometheus/
-│   ├── prometheus.yml              # Configuration for scraping
-│   └── data/                       # TSDB data
-├── grafana/ (optional if needed)
-├── README.md
-```
-
----
-
 ## 🧱 Architecture Overview
 
-```
-                ┌────────────────────────────┐
-                │        Your System         │
-                │   (Ubuntu/Linux Machine)   │
-                └────────────┬───────────────┘
-                             │
-                             ▼
-                ┌────────────────────────────┐
-                │      Node Exporter         │
-                │ Exposes system metrics     │
-                │  → http://localhost:9100   │
-                └────────────┬───────────────┘
-                             │
-                             ▼
-                ┌────────────────────────────┐
-                │        Prometheus          │
-                │ Scrapes & stores metrics   │
-                │  → http://localhost:9090   │
-                └────────────┬───────────────┘
-                             │
-                             ▼
-                ┌────────────────────────────┐
-                │          Grafana           │
-                │ Dashboard visualizations   │
-                │  → http://localhost:3000   │
-                └────────────────────────────┘
-```
+The monitoring stack follows a simple yet powerful architecture. The **Node Exporter** runs on the target Linux machine, collecting system metrics. **Prometheus** is configured to periodically "scrape" (pull) these metrics from the Node Exporter and store them in its time-series database. Finally, **Grafana** connects to Prometheus as a data source to query and visualize the metrics in customizable dashboards.
+
+![Architecture Diagram](Prometheus-project-images/promotheous-architecture-digram.png)
 
 ---
+## ✨ Project Showcase & Visual Guide
 
+This visual walkthrough highlights the key components of the project, from the running services to the final dashboards.
+
+### **1. Services Up & Running**
+After setup, both Node Exporter and Prometheus run as services, exposing metrics and a query UI.
+
+| Node Exporter (`:9100`)                                                     | Prometheus UI (`:9090`)                                                     |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| ![Node Exporter Running](Prometheus-project-images/Node%20Exporter%20is%20now%20running.PNG) | ![Prometheus UI Running](Prometheus-project-images/Prometheus%20UI%20is%20running.PNG) |
+
+### **2. Prometheus Targets**
+Prometheus is configured to scrape metrics from itself and the Node Exporter. The "Targets" page confirms that both endpoints are `UP` and healthy.
+
+![Prometheus Targets Page](Prometheus-project-images/Target-Page.PNG)
+
+### **3. Querying with PromQL**
+Prometheus's UI allows for direct querying using PromQL. Here, we can inspect raw metrics like `node_cpu_seconds_total` and view them in a simple graph.
+
+| Raw Metric Data                                                    | Simple `up` Graph                                      |
+| ------------------------------------------------------------------ | ------------------------------------------------------ |
+| ![CPU Seconds Metric](Prometheus-project-images/node_cpu_seconds_total.PNG) | ![Up Graph in Prometheus](Prometheus-project-images/up-graph.PNG) |
+
+### **4. The Grafana Dashboard**
+The real power of the stack is realized in Grafana, which turns the raw time-series data into insightful visualizations.
+
+**Logging into Grafana (`:3000`)**
+![Grafana Login](Prometheus-project-images/Grafana-Interface-loging.PNG)
+
+**The Main Dashboard View**
+This custom dashboard provides a comprehensive overview of the system's health at a glance.
+![Main Grafana Dashboard](Prometheus-project-images/Grafana-Dashboard.PNG)
+
+**Detailed Panels**
+Each panel can be customized to show specific metrics, such as detailed CPU usage per core.
+| Overall CPU Usage                                                        | Per-Core CPU Usage                                               |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| ![CPU Usage Graph](Prometheus-project-images/Grafana-CPU-Usage-graph.PNG) | ![Per Core CPU Usage](Prometheus-project-images/CPU%20Usage%20(Per%20Core).PNG) |
+
+---
 ## 🚀 Setup Instructions
 
-### 1. Clone the Repository
+1.  **Download Prometheus & Node Exporter:**
+    -   Get the latest Linux `amd64` versions from the [Prometheus downloads page](https://prometheus.io/download/).
 
-```bash
-git clone https://github.com/AryanSharma2206/sysmon360
-cd sysmon360
-```
+2.  **Install and Run Node Exporter:**
+    ```bash
+    tar -xvf node_exporter-*.tar.gz
+    cd node_exporter-*
+    ./node_exporter &
+    ```
+    Verify it's running by visiting `http://localhost:9100/metrics`.
 
-### 2. Extract Prometheus & Node Exporter
+3.  **Configure and Run Prometheus:**
+    -   Create a `prometheus.yml` file with the following configuration:
+        ```yaml
+        global:
+          scrape_interval: 15s
 
-```bash
-tar -xvf prometheus-*.tar.gz
-tar -xvf node_exporter-*.tar.gz
-mv prometheus-* prometheus
-mv node_exporter-* node_exporter
-```
+        scrape_configs:
+          - job_name: 'node_exporter'
+            static_configs:
+              - targets: ['localhost:9100']
+        ```
+    -   Start Prometheus:
+        ```bash
+        tar -xvf prometheus-*.tar.gz
+        cd prometheus-*
+        ./prometheus --config.file=prometheus.yml &
+        ```
+    Verify it's running by visiting `http://localhost:9090`.
 
-### 3. Start Node Exporter
+4.  **Install and Run Grafana:**
+    ```bash
+    # Follow the official guide to install Grafana for your Linux distribution
+    sudo systemctl start grafana-server
+    sudo systemctl enable grafana-server
+    ```
+    Access Grafana at `http://localhost:3000` (default login: `admin` / `admin`).
 
-```bash
-cd node_exporter
-./node_exporter
-```
+5.  **Connect Grafana to Prometheus:**
+    -   In Grafana, go to **Configuration > Data Sources > Add data source**.
+    -   Select **Prometheus**.
+    -   Set the URL to `http://localhost:9090`.
+    -   Click **Save & Test**.
 
-### 4. Configure and Start Prometheus
-
-Update `prometheus/prometheus.yml`:
-
-```yaml
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-
-  - job_name: 'node_exporter'
-    static_configs:
-      - targets: ['localhost:9100']
-```
-
-Then run:
-
-```bash
-cd prometheus
-./prometheus --config.file=prometheus.yml
-```
-
-### 5. Install & Run Grafana
-
-```bash
-sudo apt update
-sudo apt install -y grafana
-sudo systemctl start grafana-server
-sudo systemctl enable grafana-server
-```
+6.  **Build a Dashboard:**
+    -   Go to **Dashboards > New dashboard > Add a new panel**.
+    -   Select Prometheus as the data source and use PromQL queries (like `rate(node_cpu_seconds_total{mode="idle"}[1m])`) to build visualizations.
 
 ---
-
-## 🌐 Access Interfaces
-
-- **Prometheus** → [http://localhost:9090](http://localhost:9090)  
-- **Node Exporter** → [http://localhost:9100](http://localhost:9100)  
-- **Grafana** → [http://localhost:3000](http://localhost:3000)  
-  *(Default login: `admin` / `admin`)*
-
----
-
-## 📈 Useful PromQL Queries
-
-```promql
-node_cpu_seconds_total
-node_memory_MemAvailable_bytes
-node_filesystem_avail_bytes
-node_load1
-rate(node_network_receive_bytes_total[1m])
-```
-
----
-
 ## 👨‍💻 Author
 
-**Aryan Sharma**  
-B.Tech CSE (AI & DS) | Poornima University  
-GitHub: [@AryanSharma2206](https://github.com/AryanSharma2206)  
-LinkedIn: [linkedin.com/in/aryan-sharma-a2a240353](https://www.linkedin.com/in/aryan-sharma-a2a240353)  
-Location: Jaipur, India
+**Aryan Sharma**
+-   **B.Tech CSE (AI & DS)** | Poornima University
+-   **Location:** Jaipur, Rajasthan, India
+-   **GitHub:** [@AryanSharma2206](https://github.com/AryanSharma2206)
+-   **LinkedIn:** [linkedin.com/in/aryan-sharma-a2a240353](https://www.linkedin.com/in/aryan-sharma-a2a240353)
